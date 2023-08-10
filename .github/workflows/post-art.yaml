@@ -1,15 +1,30 @@
 on: [push]
 name: build
 jobs:
-  runhaskell:
-    name: Post Art
-    runs-on: ubuntu-latest # or macOS-latest, or windows-latest
+  # runhaskell:
+  #   name: Post Art
+  #   runs-on: ubuntu-latest # or macOS-latest, or windows-latest
+  #   steps:
+  #     - name: "Create env file"
+  #       run: |
+  #         echo "${{ secrets.ENV_FILE }}" > .env
+  #     - uses: actions/checkout@v3
+  #     - uses: haskell/actions/setup@v2
+  #       with:
+  #         ghc-version: "9.2.8" # Exact version of ghc to use
+  #         cabal-version: "3.6.2.0"
+  #         enable-stack: true
+  #         stack-version: "latest"
+  #     - run: stack build && stack exec botinari-exe
+  post-art:
+    runs-on: ubuntu-latest
     steps:
+      - name: "Create env file"
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env
       - uses: actions/checkout@v3
-      - uses: haskell/actions/setup@v2
+      - uses: freckle/stack-action@v4
         with:
-          ghc-version: "9.2.8" # Exact version of ghc to use
-          cabal-version: "3.6.2.0"
-          enable-stack: true
-          stack-version: "latest"
+          working-directory: "./"
+          stack-yaml: "./stack.yaml"
       - run: stack build && stack exec botinari-exe
