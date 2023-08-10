@@ -63,13 +63,13 @@ instance ToJSON SkeetBody
 
 
 reqBodyWithOnePic :: Text -> Text -> PostContent -> Blob -> SkeetBody
-reqBodyWithOnePic did createdAt (PostContent skeetText altText) blob =
+reqBodyWithOnePic did datetime (PostContent skeetText altText) blob =
   SkeetBody
     "app.bsky.feed.post"
     did
     ( RecordPost
         skeetText
-        createdAt
+        datetime
         ( Just
             ( Embed
                 "app.bsky.embed.images"
