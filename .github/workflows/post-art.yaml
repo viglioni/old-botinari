@@ -1,0 +1,15 @@
+on: [push]
+name: build
+jobs:
+  runhaskell:
+    name: Post Art
+    runs-on: ubuntu-latest # or macOS-latest, or windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: haskell/actions/setup@v2
+        with:
+          ghc-version: "8.8.4" # Exact version of ghc to use
+          # cabal-version: 'latest'. Omitted, but defaults to 'latest'
+          enable-stack: true
+          stack-version: "latest"
+      - run: runhaskell Main.hs
