@@ -26,6 +26,7 @@ jobs:
           envkey_DID: ${{ secrets.DID }}
           envkey_ART_PIC: ${{ secrets.ART_PIC }}
           envkey_ART_INFO: ${{ secrets.ART_INFO }}
+          directory: "."
           file_name: .env
           fail_on_empty: false
           sort_keys: false
