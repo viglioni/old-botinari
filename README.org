@@ -1,1 +1,9 @@
-# botinari
+* Botinari
+
+This is the code behind the bot [[https://staging.bsky.app/profile/portinari.bsky.social][Cândido Botinari]] on BlueSky.
+
+
+** Post art
+This bot chooses randomly an art from [[https://en.wikipedia.org/wiki/Candido_Portinari][Cândido Portinari]] and posts them on BlueSky.
+
+
