@@ -1,8 +1,7 @@
+name: "Scheduled jobs"
 on:
   schedule:
     - "0 */2 * * *"
-
-name: build
 jobs:
   post-art:
     needs: create-envfile
@@ -16,7 +15,7 @@ jobs:
           test: false
           ghc-version: "9.2.8" # Exact version of ghc to use
           cabal-version: "3.6.2.0"
-      - name: "creating env"
+      - name: "Creating .env"
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
       - name: "Build and run"
