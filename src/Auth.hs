@@ -28,8 +28,8 @@ instance ToJSON Payload
 
 createSession :: IOEither JWT
 createSession = runExceptT $ do
-  did <- ExceptT $ envGetText "did"
-  token <- ExceptT $ envGetText "token"
+  did <- ExceptT $ envGetText "DID"
+  token <- ExceptT $ envGetText "TOKEN"
   let payload = toJSON (Payload did token)
   res <- ExceptT $ postAndFormat createSessionUrl payload Nothing
   return $ res ^. key "accessJwt" . _String

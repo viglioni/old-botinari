@@ -82,7 +82,7 @@ reqBodyWithOnePic did createdAt (PostContent skeetText altText) blob =
 skeet :: IOEither (Response ByteString)
 skeet = runExceptT $ do
   artNumber <- ExceptT  chooseArtNumber
-  did <- ExceptT $ envGetText "did"
+  did <- ExceptT $ envGetText "DID"
   dateTime <- ExceptT $ fromIO getCurrentTime
   opts <-  ExceptT getHeaders
   blob <- ExceptT $ uploadBlob artNumber opts
