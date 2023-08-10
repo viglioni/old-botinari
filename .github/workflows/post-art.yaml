@@ -1,37 +1,9 @@
-on: [push]
+on:
+  schedule:
+    - 0 */2 * * *
+
 name: build
 jobs:
-  # runhaskell:
-  #   name: Post Art
-  #   runs-on: ubuntu-latest # or macOS-latest, or windows-latest
-  #   steps:
-  #     - name: "Create env file"
-  #       run: |
-  #         echo "${{ secrets.ENV_FILE }}" > .env
-  #     - uses: actions/checkout@v3
-  #     - uses: haskell/actions/setup@v2
-  #       with:
-  #         ghc-version: "9.2.8" # Exact version of ghc to use
-  #         cabal-version: "3.6.2.0"
-  #         enable-stack: true
-  #         stack-version: "latest"
-  #     - run: stack build && stack exec botinari-exe
-  create-envfile:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Make envfile
-        uses: SpicyPizza/create-envfile@v2.0
-        with:
-          envkey_TOKEN: ${{ secrets.TOKEN }}
-          envkey_DID: ${{ secrets.DID }}
-          envkey_ART_PIC: ${{ secrets.ART_PIC }}
-          envkey_ART_INFO: ${{ secrets.ART_INFO }}
-          directory: "."
-          file_name: .env
-          fail_on_empty: false
-          sort_keys: false
-
   post-art:
     needs: create-envfile
     runs-on: ubuntu-latest
@@ -44,12 +16,8 @@ jobs:
           test: false
           ghc-version: "9.2.8" # Exact version of ghc to use
           cabal-version: "3.6.2.0"
-      - name: "checking env 1"
-        run: ls -a
-      - name: "creating env 2"
+      - name: "creating env"
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
-      - name: "checking env 2"
-        run: ls -a
       - name: "Build and run"
         run: stack build && stack exec botinari-exe
