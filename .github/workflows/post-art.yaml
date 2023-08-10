@@ -27,4 +27,7 @@ jobs:
         with:
           working-directory: "./"
           stack-yaml: "stack.yaml"
+          test: false
+          ghc-version: "9.2.8" # Exact version of ghc to use
+          cabal-version: "3.6.2.0"
       - run: stack build && stack exec botinari-exe

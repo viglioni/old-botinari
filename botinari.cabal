@@ -32,7 +32,6 @@ library
       Exception
       Helpers
       IOEither
-      Old
       Skeet
       Time
       Url
