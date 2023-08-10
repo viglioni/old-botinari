@@ -26,5 +26,5 @@ jobs:
       - uses: freckle/stack-action@v4
         with:
           working-directory: "./"
-          stack-yaml: "./stack.yaml"
+          stack-yaml: "stack.yaml"
       - run: stack build && stack exec botinari-exe
