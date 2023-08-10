@@ -16,15 +16,24 @@ jobs:
   #         enable-stack: true
   #         stack-version: "latest"
   #     - run: stack build && stack exec botinari-exe
-  post-art:
+  create-envfile:
     runs-on: ubuntu-latest
     steps:
-      - name: "Create env file"
-        run: |
-          echo "${{ secrets.ENV_FILE }}" > .env
-      - name: test env
-        run: |
-          ls
+      - name: Make envfile
+        uses: SpicyPizza/create-envfile@v2.0
+        with:
+          envkey_TOKEN: ${{ secrets.TOKEN }}
+          envkey_DID: ${{ secrets.DID }}
+          envkey_ART_PIC: ${{ secrets.ART_PIC }}
+          envkey_ART_INFO: ${{ secrets.ART_INFO }}
+          file_name: .env
+          fail_on_empty: false
+          sort_keys: false
+
+  post-art:
+    needs: create-envfile
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v3
       - uses: freckle/stack-action@v4
         with:
