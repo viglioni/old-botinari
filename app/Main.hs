@@ -1,6 +1,12 @@
+{-# LANGUAGE DuplicateRecordFields #-}
+
 module Main (main) where
 
-import Lib
+import Skeet (skeet)
+import Configuration.Dotenv (loadFile, defaultConfig)
 
 main :: IO ()
-main = someFunc
+main = do
+  loadFile defaultConfig 
+  res <- skeet
+  print res
