@@ -1,7 +1,7 @@
 name: "Scheduled jobs"
 on:
   schedule:
-    - "0 */2 * * *"
+    - cron: "0 */2 * * *"
 jobs:
   post-art:
     needs: create-envfile
