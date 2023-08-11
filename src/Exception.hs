@@ -1,17 +1,20 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Exception (ErrorMsg, formatIOException, formatException, formatStatus, formatIOStatus) where
+module Exception (ErrorMsg, formatIOException, formatException, formatStatus, formatIOStatus, throwError) where
 
 import Control.Arrow (left)
 import Control.Exception (SomeException)
 import Control.Lens ((^.))
-import Data.Text (Text)
+import Data.Text (Text, unpack)
 import Helpers (showText)
 import Network.HTTP.Client (HttpException (HttpExceptionRequest), HttpExceptionContent (StatusCodeException))
 import Network.Wreq
-  ( responseBody,
+  ( linkURL,
+    responseBody,
     responseHeaders,
-    responseStatus, responseLink, linkURL, statusCode,
+    responseLink,
+    responseStatus,
+    statusCode,
   )
 
 type ErrorMsg = Text
@@ -34,10 +37,12 @@ formatIOException = fmap (left formatHttpException)
 formatException :: Either SomeException a -> Either ErrorMsg a
 formatException = left (("Caught Exception: " <>) . showText)
 
-
 formatStatus :: HttpException -> Int
 formatStatus (HttpExceptionRequest _ (StatusCodeException err _)) = err ^. responseStatus . statusCode
 formatStatus _ = -1
 
 formatIOStatus :: IO (Either HttpException a) -> IO (Either Int a)
 formatIOStatus = fmap (left formatStatus)
+
+throwError :: ErrorMsg -> IO ()
+throwError = error . unpack

@@ -1,12 +1,14 @@
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Main (main) where
 
+import Configuration.Dotenv (defaultConfig, loadFile)
+import Exception (throwError)
 import Skeet (skeet)
-import Configuration.Dotenv (loadFile, defaultConfig)
 
 main :: IO ()
 main = do
-  loadFile defaultConfig 
+  loadFile defaultConfig
   res <- skeet
-  print res
+  either throwError print res
