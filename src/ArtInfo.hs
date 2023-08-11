@@ -101,7 +101,7 @@ formatTheme =
 
 formatTechnique :: Art -> Text
 formatTechnique =
-  ("\nTénicas: " <>) .
+  ("\nTécnicas: " <>) .
   mconcat . intersperse ", " . removeDuplicates . map tecnica . tecnicas
 
 composePost :: Art -> Text
