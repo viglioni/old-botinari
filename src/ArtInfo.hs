@@ -59,7 +59,6 @@ data Art = Art
 
 instance FromJSON Art
 
-
 data PostContent = PostContent
   { postText :: Text,
     altText :: Text
@@ -76,20 +75,24 @@ formatYear art = pack $ take 4 $ subRegex rx year ""
     year = unpack . txt_data_exibicao $ art
 
 formatCollection :: Art -> Text
-formatCollection = ("Coleção: " <>) . colecao
+formatCollection = ("\nColeção: " <>) . colecao
 
 formatArtType :: Art -> Text
-formatArtType = ("Tipo da obra: " <>) . tipo_obra
+formatArtType = ("\nTipo da obra: " <>) . tipo_obra
+
+_formatMeasure :: [Measure] -> Text
+_formatMeasure [] = ""
+_formatMeasure measures = mconcat ["\nMedidas: ", height, "cm x ", width, "cm"]
+  where
+    height = altura . head $ measures
+    width = largura . head $ measures
 
 formatMeasures :: Art -> Text
-formatMeasures art = mconcat ["Medidas: ", height, "cm x ", width, "cm"]
-  where
-    height = altura . head . medidas $ art
-    width = largura . head . medidas $ art
+formatMeasures = _formatMeasure . medidas
 
 formatTheme :: Art -> Text
 formatTheme =
-  ("Temas: " <>)
+  ("\nTemas: " <>)
     . mconcat
     . intersperse ", "
     . removeDuplicates
@@ -101,7 +104,7 @@ formatTheme =
 
 formatTechnique :: Art -> Text
 formatTechnique =
-  ("Ténicas: " <>)
+  ("\nTénicas: " <>)
     . mconcat
     . intersperse ", "
     . removeDuplicates
@@ -113,15 +116,11 @@ composePost art =
   txt_titulo art
     <> "\n"
     <> formatYear art
-    <> "\n\n"
+    <> "\n"
     <> formatCollection art
-    <> "\n"
     <> formatArtType art
-    <> "\n"
     <> formatMeasures art
-    <> "\n"
     <> formatTheme art
-    <> "\n"
     <> formatTechnique art
 
 getArtInfo :: Int -> IOEither Art
