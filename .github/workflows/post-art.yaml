@@ -4,7 +4,6 @@ on:
     - cron: "0 */2 * * *"
 jobs:
   post-art:
-    needs: create-envfile
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
