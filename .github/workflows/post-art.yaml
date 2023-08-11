@@ -16,4 +16,4 @@ jobs:
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env
       - name: "Build and run"
-        run: stack build && stack exec botinari-exe
+        run: stack build && stack exec botinari-exe "PostArt"
