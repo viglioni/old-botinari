@@ -7,6 +7,7 @@ module Main
 
 import Configuration.Dotenv (defaultConfig, loadFile)
 import Data.ByteString.Lazy (ByteString)
+import Data.Maybe (fromMaybe)
 import Exception (throwError)
 import IOEither (IOEither)
 import Network.HTTP.Client (Response)
@@ -26,15 +27,11 @@ argErrorMsg = "Arg should be one of: " <> argsList
 
 parseArgs :: [String] -> Arg
 parseArgs [] = error argErrorMsg
-parseArgs (x:_) =
-  let arg = readMaybe x :: Maybe Arg
-   in case arg of
-        Just a -> a
-        Nothing -> error argErrorMsg
+parseArgs (x:_) = fromMaybe (error argErrorMsg) (readMaybe x :: Maybe Arg)
 
 choosePost :: Arg -> IOEither (Response ByteString)
 choosePost PostArt = skeetArt
-choosePost PostLifeEvent = error "not implemented yet "
+choosePost PostLifeEvent = error "not implemented yet"
 
 main :: IO ()
 main = do
