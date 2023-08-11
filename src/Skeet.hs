@@ -1,9 +1,12 @@
+--
+-- Functions related to skeeting (posting to blueksy)
+--
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TemplateHaskell #-}
 
 module Skeet
-  ( skeet
+  ( skeetArt
   ) where
 
 import ArtInfo (PostContent(PostContent), chooseArtNumber, getPostContent)
@@ -16,8 +19,10 @@ import Data.ByteString.Lazy (ByteString)
 import Data.Text (Text)
 import Env (envGetText)
 import GHC.Generics (Generic)
+import Http (ReqResponse, post')
 import IOEither (IOEither, fromIO)
-import Network.Wreq (Response, postWith)
+import Network.Wreq (Options, Response)
+import Network.Wreq.Types (Postable)
 import Time (getCurrentTime)
 import Url (createRecordUrl)
 
@@ -70,8 +75,11 @@ reqBodyWithOnePic did datetime (PostContent skeetText altText) blob =
        ["pt-BR"]
        (Just (Embed "app.bsky.embed.images" [ImageType blob altText])))
 
-skeet :: IOEither (Response ByteString)
-skeet =
+skeet :: Postable b => b -> Maybe Options -> IOEither ReqResponse
+skeet = post' createRecordUrl
+
+skeetArt :: IOEither (Response ByteString)
+skeetArt =
   runExceptT $ do
     artNumber <- ExceptT chooseArtNumber
     did <- ExceptT $ envGetText "DID"
@@ -80,4 +88,4 @@ skeet =
     blob <- ExceptT $ uploadBlob artNumber opts
     postContent <- ExceptT $ getPostContent artNumber
     let reqBody = toJSON $ reqBodyWithOnePic did dateTime postContent blob
-    ExceptT $ fromIO $ postWith opts createRecordUrl reqBody
+    ExceptT $ skeet reqBody (Just opts)

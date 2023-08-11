@@ -1,4 +1,8 @@
-module Helpers (removeDuplicates, textToByteString, showText) where
+module Helpers
+  ( removeDuplicates
+  , textToByteString
+  , showText
+  ) where
 
 import Data.ByteString (ByteString)
 import Data.Set (fromList, toList)

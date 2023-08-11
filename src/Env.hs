@@ -1,4 +1,10 @@
-module Env (envGet, envGetText) where
+--
+-- .env related functions
+--
+module Env
+  ( envGet
+  , envGetText
+  ) where
 
 import Data.Text (Text, pack)
 import IOEither (IOEither, fromIO)

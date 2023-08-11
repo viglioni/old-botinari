@@ -12,7 +12,7 @@ import Exception (throwError)
 import GHC.Exception (SomeException)
 import IOEither (IOEither)
 import Network.HTTP.Client (Response)
-import Skeet (skeet)
+import Skeet (skeetArt)
 import System.Environment (getArgs)
 
 data Arg
@@ -33,7 +33,7 @@ parseArgs (arg:_) = return (read arg :: Arg) `catch` handler
     handler _ = error argErrorMsg
 
 choosePost :: Arg -> IOEither (Response ByteString)
-choosePost PostArt = skeet
+choosePost PostArt = skeetArt
 choosePost PostTimeline = error "not implemented yet "
 
 main :: IO ()

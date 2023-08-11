@@ -1,69 +1,71 @@
+--
+-- Functions related to getting and parsing the info for a certain art
+--
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-module ArtInfo (PostContent (PostContent), getPostContent, chooseArtNumber) where
+module ArtInfo
+  ( PostContent(PostContent)
+  , getPostContent
+  , chooseArtNumber
+  ) where
 
-import Control.Monad.Trans.Except (ExceptT (ExceptT), runExceptT)
+import Control.Monad.Trans.Except (ExceptT(ExceptT), runExceptT)
 import Data.Aeson (FromJSON)
 import Data.List (intersperse)
 import Data.Text (Text, pack, splitOn, unpack)
 import GHC.Generics (Generic)
 import Helpers (removeDuplicates)
-import IOEither (IOEither, fromIO, getAndParse, getStatus)
+import Http (getAndParse, getStatus)
+import IOEither (IOEither, fromIO)
 import System.Random (randomRIO)
 import Text.Regex (mkRegex, subRegex)
 import Url (artInfoUrl, artPingUrl)
 
 data Theme = Theme
   { tema :: Text
-  }
-  deriving (Show, Generic)
+  } deriving (Show, Generic)
 
 instance FromJSON Theme
 
 data Measure = Measure
-  { altura :: Text,
-    largura :: Text
-  }
-  deriving (Show, Generic)
+  { altura :: Text
+  , largura :: Text
+  } deriving (Show, Generic)
 
 instance FromJSON Measure
 
 data Technique = Technique
   { tecnica :: Text
-  }
-  deriving (Show, Generic)
+  } deriving (Show, Generic)
 
 instance FromJSON Technique
 
 data Colour = Colour
   { cor :: Text
-  }
-  deriving (Show, Generic)
+  } deriving (Show, Generic)
 
 instance FromJSON Colour
 
 data Art = Art
-  { id :: Text,
-    txt_titulo :: Text,
-    txt_data_exibicao :: Text,
-    tipo_obra :: Text,
-    colecao :: Text,
-    memo_descricao :: Text,
-    temas :: [Theme],
-    medidas :: [Measure],
-    tecnicas :: [Technique],
-    cores :: [Colour]
-  }
-  deriving (Show, Generic)
+  { id :: Text
+  , txt_titulo :: Text
+  , txt_data_exibicao :: Text
+  , tipo_obra :: Text
+  , colecao :: Text
+  , memo_descricao :: Text
+  , temas :: [Theme]
+  , medidas :: [Measure]
+  , tecnicas :: [Technique]
+  , cores :: [Colour]
+  } deriving (Show, Generic)
 
 instance FromJSON Art
 
 data PostContent = PostContent
-  { postText :: Text,
-    altText :: Text
-  }
-  deriving (Show)
+  { postText :: Text
+  , altText :: Text
+  } deriving (Show)
 
 getAltText :: Art -> Text
 getAltText = memo_descricao
@@ -92,58 +94,53 @@ formatMeasures = _formatMeasure . medidas
 
 formatTheme :: Art -> Text
 formatTheme =
-  ("\nTemas: " <>)
-    . mconcat
-    . intersperse ", "
-    . removeDuplicates
-    . splitOn ":"
-    . mconcat
-    . intersperse ":"
-    . map tema
-    . temas
+  ("\nTemas: " <>) .
+  mconcat .
+  intersperse ", " .
+  removeDuplicates . splitOn ":" . mconcat . intersperse ":" . map tema . temas
 
 formatTechnique :: Art -> Text
 formatTechnique =
-  ("\nTénicas: " <>)
-    . mconcat
-    . intersperse ", "
-    . removeDuplicates
-    . map tecnica
-    . tecnicas
+  ("\nTénicas: " <>) .
+  mconcat . intersperse ", " . removeDuplicates . map tecnica . tecnicas
 
 composePost :: Art -> Text
 composePost art =
-  txt_titulo art
-    <> "\n"
-    <> formatYear art
-    <> "\n"
-    <> formatCollection art
-    <> formatArtType art
-    <> formatMeasures art
-    <> formatTheme art
-    <> formatTechnique art
+  txt_titulo art <>
+  "\n" <>
+  formatYear art <>
+  "\n" <>
+  formatCollection art <>
+  formatArtType art <>
+  formatMeasures art <> formatTheme art <> formatTechnique art
 
 getArtInfo :: Int -> IOEither Art
-getArtInfo artNum = runExceptT $ do
-  url <- ExceptT $ artInfoUrl artNum
-  ExceptT (getAndParse url :: IOEither Art)
+getArtInfo artNum =
+  runExceptT $ do
+    url <- ExceptT $ artInfoUrl artNum
+    ExceptT (getAndParse url :: IOEither Art)
 
 getPostContent :: Int -> IOEither PostContent
-getPostContent artNum = runExceptT $ do
-  artInfo <- ExceptT $ getArtInfo artNum
-  return $ postContent artInfo
+getPostContent artNum =
+  runExceptT $ do
+    artInfo <- ExceptT $ getArtInfo artNum
+    return $ postContent artInfo
   where
     postContent info = PostContent (composePost info) (getAltText info)
 
 artNumIsInvalid :: Int -> IOEither Bool
-artNumIsInvalid artNum = runExceptT $ do
-  url <- ExceptT $ artPingUrl artNum
-  status <- ExceptT $ getStatus url
-  return (status /= 200)
+artNumIsInvalid artNum =
+  runExceptT $ do
+    url <- ExceptT $ artPingUrl artNum
+    status <- ExceptT $ getStatus url
+    return (status /= 200)
 
 chooseArtNumber :: IOEither Int
-chooseArtNumber = runExceptT $ do
-  num <- ExceptT $ fromIO (randomRIO (1, 5788) :: IO Int)
-  ExceptT $ fromIO $ print $ "Art number: " <> show num
-  imgDoesntExists <- ExceptT $ artNumIsInvalid num
-  if imgDoesntExists then ExceptT chooseArtNumber else return num
+chooseArtNumber =
+  runExceptT $ do
+    num <- ExceptT $ fromIO (randomRIO (1, 5788) :: IO Int)
+    ExceptT $ fromIO $ print $ "Art number: " <> show num
+    imgDoesntExists <- ExceptT $ artNumIsInvalid num
+    if imgDoesntExists
+      then ExceptT chooseArtNumber
+      else return num
