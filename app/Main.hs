@@ -6,18 +6,17 @@ module Main
   ) where
 
 import Configuration.Dotenv (defaultConfig, loadFile)
-import Control.Exception (catch)
 import Data.ByteString.Lazy (ByteString)
 import Exception (throwError)
-import GHC.Exception (SomeException)
 import IOEither (IOEither)
 import Network.HTTP.Client (Response)
 import Skeet (skeetArt)
 import System.Environment (getArgs)
+import Text.Read (readMaybe)
 
 data Arg
   = PostArt
-  | PostTimeline
+  | PostLifeEvent
   deriving (Show, Enum, Read)
 
 argErrorMsg :: String
@@ -25,20 +24,21 @@ argErrorMsg = "Arg should be one of: " <> argsList
   where
     argsList = show $ map show (enumFrom (toEnum 0) :: [Arg])
 
-parseArgs :: [String] -> IO Arg
+parseArgs :: [String] -> Arg
 parseArgs [] = error argErrorMsg
-parseArgs (arg:_) = return (read arg :: Arg) `catch` handler
-  where
-    handler :: SomeException -> IO Arg
-    handler _ = error argErrorMsg
+parseArgs (x:_) =
+  let arg = readMaybe x :: Maybe Arg
+   in case arg of
+        Just a -> a
+        Nothing -> error argErrorMsg
 
 choosePost :: Arg -> IOEither (Response ByteString)
 choosePost PostArt = skeetArt
-choosePost PostTimeline = error "not implemented yet "
+choosePost PostLifeEvent = error "not implemented yet "
 
 main :: IO ()
 main = do
   loadFile defaultConfig
-  command <- parseArgs =<< getArgs
+  command <- parseArgs <$> getArgs
   res <- choosePost command
   either throwError print res
