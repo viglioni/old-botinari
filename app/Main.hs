@@ -5,9 +5,9 @@ module Main
   ( main
   ) where
 
-import Configuration.Dotenv (defaultConfig, loadFile)
 import Data.ByteString.Lazy (ByteString)
 import Data.Maybe (fromMaybe)
+import Env (loadEnv)
 import Exception (throwError)
 import IOEither (IOEither)
 import Network.HTTP.Client (Response)
@@ -35,7 +35,7 @@ choosePost PostLifeEvent = error "not implemented yet"
 
 main :: IO ()
 main = do
-  loadFile defaultConfig
+  loadEnv
   command <- parseArgs <$> getArgs
   res <- choosePost command
   either throwError print res
