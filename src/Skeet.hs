@@ -72,10 +72,10 @@ reqBodyWithOnePic did datetime (PostContent skeetText altText) blob =
     (RecordPost
        skeetText
        datetime
-       ["pt-BR"]
+       ["pt-BR", "en"]
        (Just (Embed "app.bsky.embed.images" [ImageType blob altText])))
 
-skeet :: Postable b => b -> Maybe Options -> IOEither ReqResponse
+skeet :: (Postable b) => b -> Maybe Options -> IOEither ReqResponse
 skeet = post' createRecordUrl
 
 skeetArt :: IOEither (Response ByteString)
