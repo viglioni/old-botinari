@@ -1,3 +1,5 @@
+Bot deactivated due to changes in the website where we got the art and art info
+
 * Botinari
 
 This is the code behind the bot [[https://staging.bsky.app/profile/portinari.bsky.social][Cândido Botinari]] on BlueSky.
